@@ -1,23 +1,30 @@
 #!/bin/python3
 
 import sqlite3
+from os.path import exists
 
 conx = sqlite3.connect('cache.db')
 
 cur = conx.cursor()
 
 class db_config():
-    def init_db():
-        cur.execute("CREATE TABLE news (publication text, headline text, author text, date text, content text)")
+    def create_db():
+        if exists('cache.db'):
+            print('Database already exists in the working directory.')
+        else:
+            cur.execute("CREATE TABLE allnews (publication text, headline text, author text, date text, content text, category text)")
+            cur.execute("CREATE TABLE politics (publication text, headline text, author text, date text, content text, category text)")
+            cur.execute("CREATE TABLE finance (publication text, headline text, author text, date text, content text, category text)")
+            cur.execute("CREATE TABLE sports (publication text, headline text, author text, date text, content text, category text)")
+
+            conx.commit()
+
+    def add_story(publication, headline, author, date, content, category):
+        cur.execute("INSERT INTO news VALUES (:publication, :headline, :author, :date, :content, :category)", 
+                    {'publication': publication, 'headline': headline, 'author': author, 'date': date, 'content': content, 'category': category})
 
         conx.commit()
 
-    def add_story(publication, headline, author, date, content):
-        cur.execute("INSERT INTO news VALUES (:publication, :headline, :author, :date,:content)", 
-                    {'publication': publication, 'headline': headline, 'author': author, 'date': date, 'content': content})
-
-        conx.commit()
-
-#db_config.add_story('Washington Post', 'Trump running again?', 'Billy Bob', '4 June, 2020', 'Well it\'s happening again. Who could have seen this coming')
+db_config.create_db()
 
 conx.close()
