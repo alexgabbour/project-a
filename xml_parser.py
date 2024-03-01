@@ -7,7 +7,6 @@
 ## for v1.0 getStories will just have to differentiate between a few xml files.
 
 import xml.dom.minidom
-import sqlite3
 
 class parser():
     #generate a set of nicely formatted stories from a specified RSS feed XML file
@@ -43,11 +42,12 @@ class parser():
                 desc = '*No description*'
 
             #after each story is parsed, store it in a dictionnary as a tuple for immutability
-            storyBlock[id] = (title, date, author, desc)
+            storyBlock[id] = (title, author, date, desc)
             id = id + 1
-
-        print(storyBlock)
         
+        return storyBlock
 
+       
 
-parser.getStories('US.xml')
+               
+

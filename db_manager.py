@@ -58,5 +58,3 @@ class db_mod():
 
         conx.commit()
         conx.close()
-
-db_config.create_db()
