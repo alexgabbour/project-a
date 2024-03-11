@@ -11,8 +11,9 @@ db_manager.db_config.create_db()
 storyBlock = xml_parser.parser.getStories('US.xml')
 
 #add story block to allnews table in cache.db
+#indices 1 through 5 are here to represent each column
 for id in storyBlock:
-    db_manager.db_mod.add_story(storyBlock[id][0], storyBlock[id][1], storyBlock[id][2], storyBlock[id][3])
+    db_manager.db_mod.add_story(storyBlock[id][0], storyBlock[id][1], storyBlock[id][2], storyBlock[id][3], storyBlock[id][4], storyBlock[id][5])
 
 
 
