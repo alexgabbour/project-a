@@ -3,7 +3,7 @@
 import sqlite3
 from os.path import exists
 
-class db_config():
+class config():
 
     #create the database
     def create_db():
@@ -13,7 +13,7 @@ class db_config():
             conx = sqlite3.connect('cache.db')
             cur = conx.cursor()
             
-            for cat in ['allnews', 'politics', 'finance', 'sports', 'digest']:
+            for cat in ['allnews', 'politics', 'finance', 'weather', 'general', 'digest']:
                 cur.execute(f"CREATE TABLE {cat} (hash real, title text, author text, date text, desc text, cat text)")
 
             conx.commit()
@@ -21,7 +21,7 @@ class db_config():
 
 
 #modify database entries
-class db_mod():
+class mod():
     #add a story entry to the 'allnews' table
     def add_story(hash, title, author, date, desc, cat):
         conx = sqlite3.connect('cache.db')
@@ -58,3 +58,29 @@ class db_mod():
 
         conx.commit()
         conx.close()
+
+    def cp_from_allnews(hash, destTable):
+        conx = sqlite3.connect('cache.db')
+        cur = conx.cursor()
+        cur.execute(f"INSERT INTO {destTable} (hash, title, author, date, desc, cat) SELECT * FROM allnews WHERE hash = :hash", {'hash': hash})
+
+        conx.commit()
+        conx.close()
+
+class query():
+
+    def all_hashes_from_category(category):
+        conx = sqlite3.connect('cache.db')
+        cur = conx.cursor()
+
+        cur.execute(f"SELECT hash FROM allnews WHERE cat = :cat", {'cat': category})
+        hashesTuples = cur.fetchall()
+        hashes = []
+        for i in range(len(hashesTuples)):
+            hashes.append(hashesTuples[i][0])
+        print(hashes, end='\n\n')
+
+        conx.commit()
+        conx.close()
+        
+        return hashes

@@ -9,10 +9,17 @@
 import xml.dom.minidom
 import hashlib
 from random import randint
+import subprocess as sp
+
+
 
 class parser():
-    #generate a set of nicely formatted stories from a specified RSS feed XML file
-
+    #fetch rss xml file from nytimes.com and save it to the working directory
+    def fetch_rss(url):
+        sp.run(['wget', url])
+    
+    
+    #generate a set of nicely formatted stories from a specified RSS feed XML file and return the dictionnary 'storyBlock'
     def getStories(xmlFile):
         domtree = xml.dom.minidom.parse(xmlFile)
         group = domtree.documentElement
@@ -21,46 +28,80 @@ class parser():
         storyBlock = {}
         id = 0
         for story in stories:
-            #check for the existance of tags - replace with nothing if they don't exist
+            #parses story info from xml tags and stores value into variables - replace with nothing if they don't exist
 
             try:
                 h = hashlib.new('md5')
-                h.update(story.getElementsByTagName('title')[0].childNodes[0].nodeValue.encode())
+                h.update(story.getElementsByTagName('title')[0].childNodes[0].nodeValue.encode()) #the hash of each story is the md5 hash of the title
                 hash = h.hexdigest()
             except IndexError:
                 h = hashlib.new('md5')
-                h.update(str(randint(0, 0xFFFF)))
+                h.update(str(randint(0, 0xFFFF))) #if there is an index error we replace the title with a random number between 0 and FFFF and hashing that instead
                 hash = h.hexdigest()
+
 
             try:
                 title = story.getElementsByTagName('title')[0].childNodes[0].nodeValue
             except IndexError:
                 title = '*No title*'
 
+
             try:
                 date = story.getElementsByTagName('pubDate')[0].childNodes[0].nodeValue
             except IndexError:
                 date = '*No date*'
 
+
             try:
                 author = story.getElementsByTagName('dc:creator')[0].childNodes[0].nodeValue
             except IndexError:
                 author = '*No author*'
+
                 
             try:
                 desc = story.getElementsByTagName('media:description')[0].childNodes[0].nodeValue
             except IndexError:
                 desc = '*No description*'
 
-            try:
-                cat = story.getElementsByTagName('category')[0].childNodes[0].nodeValue
-            except IndexError:
-                cat = '*No category*'
 
-            #after each story is parsed, store it in a dictionnary as a tuple for immutability
+            try:
+                catList = []
+                numCats = len(story.getElementsByTagName('category'))
+                for i in range(numCats):
+                    catList.append(story.getElementsByTagName('category')[i].childNodes[0].nodeValue)
+                
+                #this if block classifies many categories into the few used in the database
+                if 'United States Politics and Government' and 'Presidential Election of 2024' in catList:
+                    cat = 'politics'
+                    pass                
+                elif 'Weather' in catList:
+                    cat = 'weather'
+                    pass
+                elif 'Federal Budget (US)' or 'United States Economy' in catList:
+                    cat = 'finance'
+                    pass
+                else:
+                    cat = 'general'
+            except IndexError:                
+                cat = '*No category*' #if there are no categories associated with the story we print this
+
+            #after each story is parsed it is stored in a dictionary as a tuple for immutability
             storyBlock[id] = (hash, title, author, date, desc, cat)
             id = id + 1
         
 
-
+        
         return storyBlock
+
+
+
+
+
+
+
+
+
+
+
+
+#parser.getStories('US.xml') #uncomment line for testing
