@@ -78,7 +78,6 @@ class query():
         hashes = []
         for i in range(len(hashesTuples)):
             hashes.append(hashesTuples[i][0])
-        print(hashes, end='\n\n')
 
         conx.commit()
         conx.close()
