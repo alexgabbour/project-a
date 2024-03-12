@@ -4,14 +4,14 @@ import db_manager
 import xml_parser
 
 ##fetch xml file
-xml_parser.parser.fetch_rss('https://rss.nytimes.com/services/xml/rss/nyt/US.xml')
+xml_parser.parse.fetch_rss('https://rss.nytimes.com/services/xml/rss/nyt/US.xml')
 
 ##create cache.db database
 db_manager.config.create_db()
 
 
 ##get stories from rss feed and store relevant data in the 'storyBlock' dictionnary
-storyBlock = xml_parser.parser.getStories('US.xml')
+storyBlock = xml_parser.parse.getStories('US.xml')
 
 ##add story block to allnews table in cache.db
 #sub-indices 1 through 5 => hash, title, author, date, desc, cat

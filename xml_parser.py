@@ -10,10 +10,11 @@ import xml.dom.minidom
 import hashlib
 from random import randint
 import subprocess as sp
+from datetime import datetime
 
 
 
-class parser():
+class parse():
     #fetch rss xml file from nytimes.com and save it to the working directory
     def fetch_rss(url):
         sp.run(['wget', url])
@@ -29,10 +30,12 @@ class parser():
         id = 0
         for story in stories:
             #parses story info from xml tags and stores value into variables - replace with nothing if they don't exist
+            
 
+            #we're using the title as an input to the hash function as they are very rarely exactly the same so the probability of hashing collisions should be near zero
             try:
                 h = hashlib.new('md5')
-                h.update(story.getElementsByTagName('title')[0].childNodes[0].nodeValue.encode()) #the hash of each story is the md5 hash of the title
+                h.update(story.getElementsByTagName('title')[0].childNodes[0].nodeValue.encode()) #hash the title
                 hash = h.hexdigest()
             except IndexError:
                 h = hashlib.new('md5')
@@ -46,8 +49,12 @@ class parser():
                 title = '*No title*'
 
 
+            #Date formatting
             try:
-                date = story.getElementsByTagName('pubDate')[0].childNodes[0].nodeValue
+                rawFormat = '%a, %d %b %Y %H:%M:%S %z'
+                cleanFormat = '%d/%m/%Y'
+                rawDate = story.getElementsByTagName('pubDate')[0].childNodes[0].nodeValue
+                date = datetime.strptime(rawDate, rawFormat).strftime(cleanFormat)
             except IndexError:
                 date = '*No date*'
 
@@ -63,7 +70,7 @@ class parser():
             except IndexError:
                 desc = '*No description*'
 
-
+            #Narrow down the vast amount of different categories supplied in the rss feed to a few key categories
             try:
                 catList = []
                 numCats = len(story.getElementsByTagName('category'))
@@ -93,15 +100,4 @@ class parser():
         
         return storyBlock
 
-
-
-
-
-
-
-
-
-
-
-
-#parser.getStories('US.xml') #uncomment line for testing
+#parse.getStories('US.xml') #uncomment line for testing
