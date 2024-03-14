@@ -57,8 +57,6 @@ class App(customtk.CTk):
         self.button_4.grid(row=1, column=0, padx=10, pady=10, sticky='sw')
 
 
-
-
         ##MAIN APPLICATION FRAME
         #main frame init (row/col config with main label and scrolling frame)
         self.main_frame = customtk.CTkFrame(self)
