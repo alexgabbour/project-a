@@ -3,7 +3,6 @@ News aggregator app for Linux operating systems. Collects news from various sour
 
 To install dependancies:
 
-pip install pip-requirements.txt
-sudo apt install bash-requirements.txt
+pip install -r requirements.txt
 
-*Run these commands within a venv
+*Run this command within the virtual environment
