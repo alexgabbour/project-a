@@ -15,7 +15,7 @@ from datetime import datetime
 
 
 class parse():
-    #fetch rss xml file from nytimes.com and save it to the working directory
+    #fetch rss xml file from nytimes.com with subprocess and save it to the working directory
     def fetch_rss(url):
         sp.run(['wget', url])
     
@@ -70,21 +70,27 @@ class parse():
             except IndexError:
                 desc = '*No description*'
 
+
             #Narrow down the vast amount of different categories supplied in the rss feed to a few key categories
             try:
                 catList = []
                 numCats = len(story.getElementsByTagName('category'))
                 for i in range(numCats):
-                    catList.append(story.getElementsByTagName('category')[i].childNodes[0].nodeValue)
-                
-                #this if block classifies many categories into the few used in the database
-                if 'United States Politics and Government' and 'Presidential Election of 2024' in catList:
+                    catList.append(story.getElementsByTagName('category')[i].childNodes[0].nodeValue)                
+
+                #this if block classifies many categories into the few used in the database using the wordlists
+                poli_wl = ['United States Politics and Government', 'Presidential Election of 2024', 'Police', 'Demonstrations, Protests and Riots']
+                wea_wl = ['Weather', 'Storm', 'Hurricane', 'Tornado', 'Flood']
+                fin_wl = ['Federal Budget (US)', 'United States Economy']          
+
+                print(catList)
+                if  any(poli_wl)  in catList:
                     cat = 'politics'
                     pass                
-                elif 'Weather' in catList:
+                elif any(wea_wl) in catList:
                     cat = 'weather'
                     pass
-                elif 'Federal Budget (US)' or 'United States Economy' in catList:
+                elif  any(fin_wl)  in catList:
                     cat = 'finance'
                     pass
                 else:

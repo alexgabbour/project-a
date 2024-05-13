@@ -97,6 +97,6 @@ class ScrollingFrame(customtk.CTkScrollableFrame):
         #story contents
 
 
-
+#Create the initial instance of the App object
 app = App()
 app.mainloop()
